@@ -5,7 +5,6 @@ namespace: neo4j
 
 resources:
   - configmap.yaml
-  - secret.yaml
   - mcp-neo4j-cypher.yaml
   - mcp-neo4j-memory.yaml
   - mcp-neo4j-data-modeling.yaml

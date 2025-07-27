@@ -88,8 +88,13 @@ spec:
         - name: tmp
           mountPath: /tmp
           readOnly: false
+        - name: cache
+          mountPath: /.cache
+          readOnly: false
       volumes:
       - name: tmp
+        emptyDir: {}
+      - name: cache
         emptyDir: {}
 ---
 apiVersion: v1
