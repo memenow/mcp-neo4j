@@ -17,7 +17,7 @@ on:
 env:
   GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
   GKE_ZONE: ${{ secrets.GKE_ZONE }}
-  PROJECT_ID: mmn-ai
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
 jobs:
   deploy:
