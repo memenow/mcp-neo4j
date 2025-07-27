@@ -91,10 +91,15 @@ spec:
         - name: cache
           mountPath: /.cache
           readOnly: false
+        - name: venv
+          mountPath: /app/.venv
+          readOnly: false
       volumes:
       - name: tmp
         emptyDir: {}
       - name: cache
+        emptyDir: {}
+      - name: venv
         emptyDir: {}
 ---
 apiVersion: v1
