@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-neo4j-data-modeling
+  namespace: neo4j
+  labels:
+    app: mcp-neo4j-data-modeling
+    component: mcp
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mcp-neo4j-data-modeling
+  template:
+    metadata:
+      labels:
+        app: mcp-neo4j-data-modeling
+        component: mcp
+        version: v1
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: mcp-neo4j-data-modeling
+        image: ghcr.io/memenow/mcp-neo4j-data-modeling:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8004
+          name: http
+          protocol: TCP
+        env:
+        - name: MCP_TRANSPORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-neo4j-config
+              key: NEO4J_TRANSPORT
+        - name: NEO4J_MCP_SERVER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-neo4j-config
+              key: NEO4J_MCP_SERVER_HOST
+        - name: NEO4J_MCP_SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-neo4j-config
+              key: MODELING_PORT
+        - name: NEO4J_MCP_SERVER_PATH
+          value: "/api/mcp/"
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-neo4j-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+            ephemeral-storage: "200Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8004
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+          readOnly: false
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      nodeSelector:
+        cloud.google.com/compute-class: "general-purpose"
+        cloud.google.com/machine-family: "e2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-neo4j-data-modeling
+  namespace: neo4j
+  labels:
+    app: mcp-neo4j-data-modeling
+    component: mcp
+spec:
+  selector:
+    app: mcp-neo4j-data-modeling
+  ports:
+  - name: http
+    port: 8004
+    targetPort: 8004
+  type: ClusterIP

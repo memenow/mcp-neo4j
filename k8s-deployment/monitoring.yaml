@@ -1,0 +1,83 @@
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: mcp-neo4j-metrics
+  namespace: neo4j
+  labels:
+    app: mcp-neo4j
+    component: monitoring
+spec:
+  selector:
+    matchLabels:
+      component: mcp
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: mcp-neo4j-vs
+  namespace: neo4j
+spec:
+  hosts:
+  - mcp.memenow.net
+  gateways:
+  - mcp-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /v1/neo4j/cypher/
+    route:
+    - destination:
+        host: mcp-neo4j-cypher
+        port:
+          number: 8001
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+  - match:
+    - uri:
+        prefix: /v1/neo4j/memory/
+    route:
+    - destination:
+        host: mcp-neo4j-memory
+        port:
+          number: 8002
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+  - match:
+    - uri:
+        prefix: /v1/neo4j/modeling/
+    route:
+    - destination:
+        host: mcp-neo4j-data-modeling
+        port:
+          number: 8004
+    timeout: 30s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: mcp-neo4j-authz
+  namespace: neo4j
+spec:
+  selector:
+    matchLabels:
+      component: mcp
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"]
+  - to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/api/mcp/*", "/health", "/metrics"]
