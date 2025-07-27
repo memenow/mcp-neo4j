@@ -91,7 +91,7 @@ spec:
               - ALL
         livenessProbe:
           httpGet:
-            path: /health
+            path: /api/mcp/health
             port: 8001
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -99,7 +99,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /health
+            path: /api/mcp/health
             port: 8001
           initialDelaySeconds: 5
           periodSeconds: 5
