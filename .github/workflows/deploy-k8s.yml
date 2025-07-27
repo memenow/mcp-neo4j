@@ -47,6 +47,16 @@ jobs:
       run: |
         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $PROJECT_ID
 
+    - name: Create Neo4j Secret
+      run: |
+        kubectl create secret generic mcp-neo4j-secret \
+          --from-literal=NEO4J_USERNAME=neo4j \
+          --from-literal=NEO4J_PASSWORD="${{ secrets.NEO4J_PASSWORD }}" \
+          --from-literal=NEO4J_AURA_CLIENT_ID="${{ secrets.NEO4J_AURA_CLIENT_ID }}" \
+          --from-literal=NEO4J_AURA_CLIENT_SECRET="${{ secrets.NEO4J_AURA_CLIENT_SECRET }}" \
+          --namespace=neo4j \
+          --dry-run=client -o yaml | kubectl apply -f -
+
     - name: Deploy to GKE
       run: |
         cd k8s-deployment
