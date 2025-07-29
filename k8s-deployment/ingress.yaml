@@ -9,6 +9,10 @@ metadata:
     networking.gke.io/managed-certificates: "mcp-neo4j-cert"
     kubernetes.io/ingress.allow-http: "false"
 spec:
+  tls:
+  - hosts:
+    - INGRESS_HOST
+    secretName: mcp-neo4j-cert-secret
   rules:
   - host: INGRESS_HOST
     http:
