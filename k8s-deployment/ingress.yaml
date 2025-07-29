@@ -10,7 +10,7 @@ metadata:
     kubernetes.io/ingress.allow-http: "false"
 spec:
   rules:
-  - host: mcp.memenow.net
+  - host: INGRESS_HOST
     http:
       paths:
       - path: /v1/neo4j/cypher/*
@@ -42,4 +42,4 @@ metadata:
   namespace: neo4j
 spec:
   domains:
-    - mcp.memenow.net
+    - INGRESS_HOST

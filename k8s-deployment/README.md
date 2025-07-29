@@ -78,12 +78,12 @@ data:
 
 ### Ingress
 
-The ingress follows Google Cloud API design guidelines with versioned, resource-oriented paths:
+The ingress configuration uses environment variable support for open source compatibility. The domain is configured through GitHub Secrets:
 
 ```yaml
 spec:
   rules:
-  - host: mcp.memenow.net
+  - host: INGRESS_HOST  # Replaced during deployment with actual domain
     http:
       paths:
       - path: /v1/neo4j/cypher/*
@@ -91,13 +91,16 @@ spec:
       - path: /v1/neo4j/modeling/*
 ```
 
+**Required GitHub Secret:**
+- `INGRESS_HOST`: Domain name for ingress (e.g., `mcp.example.com`)
+
 ## Service Endpoints
 
-After deployment, services will be available at:
+After deployment, services will be available at (replace with your actual domain):
 
-- Cypher Service: `https://mcp.memenow.net/v1/neo4j/cypher/api/mcp/`
-- Memory Service: `https://mcp.memenow.net/v1/neo4j/memory/api/mcp/`
-- Data Modeling: `https://mcp.memenow.net/v1/neo4j/modeling/api/mcp/`
+- Cypher Service: `https://<your-domain>/v1/neo4j/cypher/api/mcp/`
+- Memory Service: `https://<your-domain>/v1/neo4j/memory/api/mcp/`
+- Data Modeling: `https://<your-domain>/v1/neo4j/modeling/api/mcp/`
 
 ## Monitoring
 
@@ -180,7 +183,7 @@ GitHub Actions workflows automatically:
 
 ## Production Checklist
 
-- [x] Domain configured for mcp.memenow.net
+- [x] Environment variable support for domain configuration  
 - [x] Configure SSL certificates (GKE managed certificates)
 - [ ] Set up monitoring and alerting
 - [ ] Configure backup strategy for Neo4j
