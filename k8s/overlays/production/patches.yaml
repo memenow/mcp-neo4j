@@ -9,9 +9,12 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector: null
-      tolerations: null
-      affinity: null
+      nodeSelector:
+        $patch: delete
+      tolerations:
+        $patch: delete
+      affinity:
+        $patch: delete
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -23,9 +26,12 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector: null
-      tolerations: null
-      affinity: null
+      nodeSelector:
+        $patch: delete
+      tolerations:
+        $patch: delete
+      affinity:
+        $patch: delete
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,6 +43,9 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector: null
-      tolerations: null
-      affinity: null
+      nodeSelector:
+        $patch: delete
+      tolerations:
+        $patch: delete
+      affinity:
+        $patch: delete
