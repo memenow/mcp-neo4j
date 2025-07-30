@@ -9,12 +9,100 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector:
-        $patch: delete
-      tolerations:
-        $patch: delete
-      affinity:
-        $patch: delete
+      $patch: replace
+      serviceAccountName: mcp-neo4j-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: cypher
+        image: ghcr.io/memenow/mcp-neo4j-cypher:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8001
+          name: http
+          protocol: TCP
+        env:
+        - name: NEO4J_URI
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_URI
+        - name: NEO4J_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_DATABASE
+        - name: NEO4J_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_USERNAME
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_PASSWORD
+        - name: NEO4J_TRANSPORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_TRANSPORT
+        - name: NEO4J_MCP_SERVER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_MCP_SERVER_HOST
+        - name: NEO4J_MCP_SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: CYPHER_PORT
+        - name: NEO4J_MCP_SERVER_PATH
+          value: "/api/mcp/"
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+            ephemeral-storage: "200Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        livenessProbe:
+          tcpSocket:
+            port: 8001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 8001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+          readOnly: false
+      volumes:
+      - name: tmp
+        emptyDir: {}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -26,12 +114,100 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector:
-        $patch: delete
-      tolerations:
-        $patch: delete
-      affinity:
-        $patch: delete
+      $patch: replace
+      serviceAccountName: mcp-neo4j-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: memory
+        image: ghcr.io/memenow/mcp-neo4j-memory:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8002
+          name: http
+          protocol: TCP
+        env:
+        - name: NEO4J_URL
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_URI
+        - name: NEO4J_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_DATABASE
+        - name: NEO4J_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_USERNAME
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_PASSWORD
+        - name: NEO4J_TRANSPORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_TRANSPORT
+        - name: NEO4J_MCP_SERVER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_MCP_SERVER_HOST
+        - name: NEO4J_MCP_SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: MEMORY_PORT
+        - name: NEO4J_MCP_SERVER_PATH
+          value: "/api/mcp/"
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+            ephemeral-storage: "200Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        livenessProbe:
+          tcpSocket:
+            port: 8002
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 8002
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+          readOnly: false
+      volumes:
+      - name: tmp
+        emptyDir: {}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -43,9 +219,101 @@ spec:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
     spec:
-      nodeSelector:
-        $patch: delete
-      tolerations:
-        $patch: delete
-      affinity:
-        $patch: delete
+      $patch: replace
+      serviceAccountName: mcp-neo4j-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: modeling
+        image: ghcr.io/memenow/mcp-neo4j-data-modeling:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8004
+          name: http
+          protocol: TCP
+        env:
+        - name: NEO4J_URI
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_URI
+        - name: NEO4J_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_DATABASE
+        - name: NEO4J_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_USERNAME
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mcp-credentials
+              key: NEO4J_PASSWORD
+        - name: NEO4J_TRANSPORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_TRANSPORT
+        - name: NEO4J_MCP_SERVER_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: NEO4J_MCP_SERVER_HOST
+        - name: NEO4J_MCP_SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: MODELING_PORT
+        - name: NEO4J_MCP_SERVER_PATH
+          value: "/api/mcp/"
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: mcp-app-config
+              key: LOG_LEVEL
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+            ephemeral-storage: "100Mi"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+            ephemeral-storage: "200Mi"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+              - ALL
+        livenessProbe:
+          tcpSocket:
+            port: 8004
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 8004
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+          readOnly: false
+        - name: venv
+          mountPath: /app/venv
+      volumes:
+      - name: tmp
+        emptyDir: {}
+      - name: venv
+        emptyDir: {}
