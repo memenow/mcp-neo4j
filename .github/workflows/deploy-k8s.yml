@@ -50,7 +50,7 @@ jobs:
 
     - name: Create Neo4j Secret
       run: |
-        kubectl create secret generic mcp-neo4j-secret \
+        kubectl create secret generic mcp-credentials \
           --from-literal=NEO4J_USERNAME=neo4j \
           --from-literal=NEO4J_PASSWORD="${{ secrets.NEO4J_PASSWORD }}" \
           --from-literal=NEO4J_AURA_CLIENT_ID="${{ secrets.NEO4J_AURA_CLIENT_ID }}" \
