@@ -1,30 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mcp-neo4j-memory
-  namespace: neo4j
+  name: mcp-memory
   labels:
-    app: mcp-neo4j-memory
-    component: mcp
-    version: v1
+    app.kubernetes.io/name: mcp
+    app.kubernetes.io/component: memory
+    app.kubernetes.io/part-of: neo4j-mcp
+    app.kubernetes.io/managed-by: kustomize
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mcp-neo4j-memory
+      app.kubernetes.io/name: mcp
+      app.kubernetes.io/component: memory
   template:
     metadata:
       labels:
-        app: mcp-neo4j-memory
-        component: mcp
-        version: v1
+        app.kubernetes.io/name: mcp
+        app.kubernetes.io/component: memory
+        app.kubernetes.io/part-of: neo4j-mcp
+        app.kubernetes.io/version: v1.0.0
     spec:
+      serviceAccountName: mcp-neo4j-sa
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
       containers:
-      - name: mcp-neo4j-memory
+      - name: memory
         image: ghcr.io/memenow/mcp-neo4j-memory:latest
         imagePullPolicy: Always
         ports:
@@ -35,44 +38,44 @@ spec:
         - name: NEO4J_URL
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_URI
         - name: NEO4J_DATABASE
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_DATABASE
         - name: NEO4J_USERNAME
           valueFrom:
             secretKeyRef:
-              name: mcp-neo4j-secret
+              name: mcp-credentials
               key: NEO4J_USERNAME
         - name: NEO4J_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mcp-neo4j-secret
+              name: mcp-credentials
               key: NEO4J_PASSWORD
         - name: NEO4J_TRANSPORT
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_TRANSPORT
         - name: NEO4J_MCP_SERVER_HOST
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_MCP_SERVER_HOST
         - name: NEO4J_MCP_SERVER_PORT
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: MEMORY_PORT
         - name: NEO4J_MCP_SERVER_PATH
           value: "/api/mcp/"
         - name: LOG_LEVEL
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: LOG_LEVEL
         resources:
           requests:
@@ -111,20 +114,3 @@ spec:
       volumes:
       - name: tmp
         emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mcp-neo4j-memory
-  namespace: neo4j
-  labels:
-    app: mcp-neo4j-memory
-    component: mcp
-spec:
-  selector:
-    app: mcp-neo4j-memory
-  ports:
-  - name: http
-    port: 8002
-    targetPort: 8002
-  type: ClusterIP

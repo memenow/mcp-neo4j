@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: mcp-neo4j-cypher-hpa
+  name: mcp-cypher-hpa
   namespace: neo4j
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: mcp-neo4j-cypher
+    name: mcp-cypher
   minReplicas: 1
   maxReplicas: 5
   metrics:
@@ -40,13 +40,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: mcp-neo4j-memory-hpa
+  name: mcp-memory-hpa
   namespace: neo4j
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: mcp-neo4j-memory
+    name: mcp-memory
   minReplicas: 1
   maxReplicas: 5
   metrics:
@@ -79,13 +79,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: mcp-neo4j-data-modeling-hpa
+  name: mcp-modeling-hpa
   namespace: neo4j
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: mcp-neo4j-data-modeling
+    name: mcp-modeling
   minReplicas: 1
   maxReplicas: 3
   metrics:

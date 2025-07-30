@@ -1,0 +1,30 @@
+# Production-specific patches
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-cypher
+spec:
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-memory
+spec:
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-modeling
+spec:
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"

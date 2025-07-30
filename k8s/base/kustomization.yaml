@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: neo4j
+
+resources:
+  - core/configmap.yaml
+  - core/secret.yaml
+  - core/service-account.yaml
+  - core/cypher-deployment.yaml
+  - core/memory-deployment.yaml
+  - core/modeling-deployment.yaml
+  - core/cypher-service.yaml
+  - core/memory-service.yaml
+  - core/modeling-service.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/part-of: neo4j-mcp
+
+images:
+  - name: ghcr.io/memenow/mcp-neo4j-cypher
+    newTag: latest
+  - name: ghcr.io/memenow/mcp-neo4j-memory
+    newTag: latest
+  - name: ghcr.io/memenow/mcp-neo4j-data-modeling
+    newTag: latest
