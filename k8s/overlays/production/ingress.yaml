@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: mcp-neo4j-ingress
+  name: mcp-ingress
   namespace: neo4j
   annotations:
     kubernetes.io/ingress.class: "gce"
     kubernetes.io/ingress.global-static-ip-name: "prod-autopilot-us-central-ip"
-    networking.gke.io/managed-certificates: "mcp-neo4j-cert"
+    networking.gke.io/managed-certificates: "mcp-cert"
     kubernetes.io/ingress.allow-http: "false"
 spec:
   rules:
@@ -17,28 +17,28 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: mcp-neo4j-cypher
+            name: mcp-cypher
             port:
               number: 8001
       - path: /v1/neo4j/memory/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: mcp-neo4j-memory
+            name: mcp-memory
             port:
               number: 8002
       - path: /v1/neo4j/modeling/*
         pathType: ImplementationSpecific
         backend:
           service:
-            name: mcp-neo4j-data-modeling
+            name: mcp-modeling
             port:
               number: 8004
 ---
 apiVersion: networking.gke.io/v1
 kind: ManagedCertificate
 metadata:
-  name: mcp-neo4j-cert
+  name: mcp-cert
   namespace: neo4j
 spec:
   domains:

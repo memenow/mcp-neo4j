@@ -1,88 +1,71 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mcp-neo4j-cypher
-  namespace: neo4j
+  name: mcp-modeling
   labels:
-    app: mcp-neo4j-cypher
-    component: mcp
-    version: v1
+    app.kubernetes.io/name: mcp
+    app.kubernetes.io/component: modeling
+    app.kubernetes.io/part-of: neo4j-mcp
+    app.kubernetes.io/managed-by: kustomize
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mcp-neo4j-cypher
+      app.kubernetes.io/name: mcp
+      app.kubernetes.io/component: modeling
   template:
     metadata:
       labels:
-        app: mcp-neo4j-cypher
-        component: mcp
-        version: v1
+        app.kubernetes.io/name: mcp
+        app.kubernetes.io/component: modeling
+        app.kubernetes.io/part-of: neo4j-mcp
+        app.kubernetes.io/version: v1.0.0
     spec:
+      serviceAccountName: mcp-neo4j-sa
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 1000
       containers:
-      - name: mcp-neo4j-cypher
-        image: ghcr.io/memenow/mcp-neo4j-cypher:latest
+      - name: modeling
+        image: ghcr.io/memenow/mcp-neo4j-data-modeling:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8001
+        - containerPort: 8004
           name: http
           protocol: TCP
         env:
-        - name: NEO4J_URI
+        - name: MCP_TRANSPORT
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
-              key: NEO4J_URI
-        - name: NEO4J_DATABASE
-          valueFrom:
-            configMapKeyRef:
-              name: mcp-neo4j-config
-              key: NEO4J_DATABASE
-        - name: NEO4J_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: mcp-neo4j-secret
-              key: NEO4J_USERNAME
-        - name: NEO4J_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mcp-neo4j-secret
-              key: NEO4J_PASSWORD
-        - name: NEO4J_TRANSPORT
-          valueFrom:
-            configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_TRANSPORT
         - name: NEO4J_MCP_SERVER_HOST
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: NEO4J_MCP_SERVER_HOST
         - name: NEO4J_MCP_SERVER_PORT
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
-              key: CYPHER_PORT
+              name: mcp-app-config
+              key: MODELING_PORT
         - name: NEO4J_MCP_SERVER_PATH
           value: "/api/mcp/"
         - name: LOG_LEVEL
           valueFrom:
             configMapKeyRef:
-              name: mcp-neo4j-config
+              name: mcp-app-config
               key: LOG_LEVEL
         resources:
           requests:
             memory: "128Mi"
             cpu: "50m"
-            ephemeral-storage: "100Mi"
+            ephemeral-storage: "500Mi"
           limits:
             memory: "256Mi"
             cpu: "250m"
-            ephemeral-storage: "200Mi"
+            ephemeral-storage: "1Gi"
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -91,14 +74,14 @@ spec:
               - ALL
         livenessProbe:
           tcpSocket:
-            port: 8001
+            port: 8004
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
         readinessProbe:
           tcpSocket:
-            port: 8001
+            port: 8004
           initialDelaySeconds: 10
           periodSeconds: 5
           timeoutSeconds: 3
@@ -108,23 +91,16 @@ spec:
         - name: tmp
           mountPath: /tmp
           readOnly: false
+        - name: cache
+          mountPath: /.cache
+          readOnly: false
+        - name: venv
+          mountPath: /app/.venv
+          readOnly: false
       volumes:
       - name: tmp
         emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mcp-neo4j-cypher
-  namespace: neo4j
-  labels:
-    app: mcp-neo4j-cypher
-    component: mcp
-spec:
-  selector:
-    app: mcp-neo4j-cypher
-  ports:
-  - name: http
-    port: 8001
-    targetPort: 8001
-  type: ClusterIP
+      - name: cache
+        emptyDir: {}
+      - name: venv
+        emptyDir: {}
