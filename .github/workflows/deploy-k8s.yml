@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'k8s-deployment/**'
+      - 'k8s/**'
       - '.github/workflows/deploy-k8s.yml'
   workflow_run:
     workflows: ["Build and Push Docker Images"]
@@ -60,7 +60,7 @@ jobs:
 
     - name: Deploy to GKE
       run: |
-        cd k8s-deployment
+        cd k8s/overlays/production
         # Replace INGRESS_HOST placeholder with actual value
         if [ -f ingress.yaml ]; then
           sed -i "s/INGRESS_HOST/$INGRESS_HOST/g" ingress.yaml
@@ -69,11 +69,11 @@ jobs:
 
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/mcp-neo4j-cypher -n neo4j --timeout=600s
-        kubectl rollout status deployment/mcp-neo4j-memory -n neo4j --timeout=600s
-        kubectl rollout status deployment/mcp-neo4j-data-modeling -n neo4j --timeout=600s
+        kubectl rollout status deployment/cypher -n neo4j --timeout=600s
+        kubectl rollout status deployment/memory -n neo4j --timeout=600s
+        kubectl rollout status deployment/modeling -n neo4j --timeout=600s
 
     - name: Get service status
       run: |
-        kubectl get services -n neo4j -l project=mcp-neo4j
+        kubectl get services -n neo4j -l app.kubernetes.io/part-of=neo4j-mcp
         kubectl get ingress -n neo4j
