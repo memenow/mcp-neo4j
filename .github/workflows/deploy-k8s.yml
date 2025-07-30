@@ -69,9 +69,9 @@ jobs:
 
     - name: Verify deployment
       run: |
-        kubectl rollout status deployment/cypher -n neo4j --timeout=600s
-        kubectl rollout status deployment/memory -n neo4j --timeout=600s
-        kubectl rollout status deployment/modeling -n neo4j --timeout=600s
+        kubectl rollout status deployment/mcp-cypher -n neo4j --timeout=600s
+        kubectl rollout status deployment/mcp-memory -n neo4j --timeout=600s
+        kubectl rollout status deployment/mcp-modeling -n neo4j --timeout=600s
 
     - name: Get service status
       run: |
