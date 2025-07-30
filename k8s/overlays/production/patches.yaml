@@ -8,6 +8,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      nodeSelector: null
+      tolerations: null
+      affinity: null
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,6 +22,10 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      nodeSelector: null
+      tolerations: null
+      affinity: null
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -28,3 +36,7 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      nodeSelector: null
+      tolerations: null
+      affinity: null
