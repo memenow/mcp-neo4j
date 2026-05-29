@@ -160,7 +160,7 @@ The server supports HTTP transport for web-based deployments and microservices:
 mcp-neo4j-memory --transport http
 
 # Custom HTTP configuration
-mcp-neo4j-memory --transport http --host 0.0.0.0 --port 8080 --path /api/mcp/
+mcp-neo4j-memory --transport http --server-host 0.0.0.0 --server-port 8080 --server-path /api/mcp/
 ```
 
 Environment variables for HTTP configuration:

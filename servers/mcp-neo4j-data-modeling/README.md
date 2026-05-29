@@ -25,7 +25,7 @@ The server provides these resources:
 - `resource://schema/data_model`
   - Get the JSON schema for a DataModel object
   - Returns: JSON schema defining the structure of a DataModel
-- `resource://neo4j_data_ingest_process`
+- `resource://static/neo4j_data_ingest_process`
   - Get a detailed explanation of the recommended process for ingesting data into Neo4j using the data model
   - Returns: Markdown document explaining the ingest process
 
@@ -128,7 +128,7 @@ The server supports HTTP transport for web-based deployments and microservices:
 mcp-neo4j-data-modeling --transport http
 
 # Custom HTTP configuration
-mcp-neo4j-data-modeling --transport http --host 0.0.0.0 --port 8080 --path /api/mcp/
+mcp-neo4j-data-modeling --transport http --server-host 0.0.0.0 --server-port 8080 --server-path /api/mcp/
 ```
 
 Environment variables for HTTP configuration:
@@ -200,7 +200,7 @@ uv pip install -e ".[dev]"
 3. Run Tests
 
 ```bash
-./test.sh
+make test
 ```
 
 ### 🔧 Development Configuration

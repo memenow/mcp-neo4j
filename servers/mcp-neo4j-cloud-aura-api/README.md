@@ -9,6 +9,7 @@ This server allows you to create, monitor, and manage Neo4j Aura instances direc
 ## 🔑 Authentication
 
 Authentication with the Neo4j Aura API requires:
+
 - Client ID
 - Client Secret
 
@@ -23,6 +24,7 @@ Here is the [API Specification](https://neo4j.com/docs/aura/platform/api/specifi
 The server offers these core tools:
 
 #### 🛠️ Instance Management
+
 - `list_instances`
   - List all Neo4j Aura database instances
   - No input required
@@ -45,11 +47,13 @@ The server offers these core tools:
   - Input:
     - `tenant_id` (string): ID of the tenant/project where the instance will be created
     - `name` (string): Name for the new instance
-    - `memory` (integer): Memory allocation in GB
-    - `region` (string): Region for the instance (e.g., 'us-east-1')
-    - `version` (string): Neo4j version (e.g., '5.15')
-    - `type` (string, optional): Instance type (enterprise or professional)
+    - `memory` (integer, optional): Memory allocation in GB (default: 1)
+    - `region` (string, optional): Region for the instance (default: 'us-central1')
+    - `type` (string, optional): Instance type (`free-db`, `professional-db`, `enterprise-db`, or `business-critical`; default: `free-db`)
     - `vector_optimized` (boolean, optional): Whether the instance is optimized for vector operations
+    - `cloud_provider` (string, optional): Cloud provider (`gcp`, `aws`, or `azure`; default: `gcp`)
+    - `graph_analytics_plugin` (boolean, optional): Whether to enable the graph analytics plugin
+    - `source_instance_id` (string, optional): ID of the source instance to clone from
   - Returns: Created instance details
 
 - `update_instance_name`
@@ -88,11 +92,11 @@ The server offers these core tools:
 - `delete_instance`
   - Delete a database instance
   - Input:
-    - `tenant_id` (string): ID of the tenant/project where the instance exists
     - `instance_id` (string): ID of the instance to delete
   - Returns: Deletion status information
 
 #### 🏢 Tenant/Project Management
+
 - `list_tenants`
   - List all Neo4j Aura tenants/projects
   - No input required
@@ -103,7 +107,6 @@ The server offers these core tools:
   - Input:
     - `tenant_id` (string): ID of the tenant/project to retrieve
   - Returns: Detailed information about the tenant/project
-
 
 ## 🔧 Usage with Claude Desktop
 
@@ -173,7 +176,7 @@ The server supports HTTP transport for web-based deployments and microservices:
 mcp-neo4j-aura-manager --transport http
 
 # Custom HTTP configuration
-mcp-neo4j-aura-manager --transport http --host 0.0.0.0 --port 8080 --path /api/mcp/
+mcp-neo4j-aura-manager --transport http --server-host 0.0.0.0 --server-port 8080 --server-path /api/mcp/
 ```
 
 Environment variables for HTTP configuration:
@@ -191,7 +194,7 @@ mcp-neo4j-aura-manager
 The server supports three transport modes:
 
 - **STDIO** (default): Standard input/output for local tools and Claude Desktop
-- **SSE**: Server-Sent Events for web-based deployments  
+- **SSE**: Server-Sent Events for web-based deployments
 - **HTTP**: Streamable HTTP for modern web deployments and microservices
 
 ## 📝 Usage Examples
@@ -205,9 +208,11 @@ The server supports three transport modes:
 ![](docs/images/mcp-aura-find-by-name.png)
 
 ### 📋 List instances and find paused instance
+
 ![](docs/images/mcp-aura-find-paused.png)
 
 ### ▶️ Resume paused instances
+
 ![](docs/images/mcp-aura-list-resume.png)
 
 ### ➕ Create a new instance
@@ -219,6 +224,7 @@ The server supports three transport modes:
 ### 📦 Prerequisites
 
 1. Install `uv` (Universal Virtualenv):
+
 ```bash
 # Using pip
 pip install uv
@@ -231,6 +237,7 @@ cargo install uv
 ```
 
 2. Clone the repository and set up development environment:
+
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/mcp-neo4j-aura-manager.git
@@ -262,5 +269,3 @@ docker run -e NEO4J_AURA_CLIENT_ID="your-client-id" \
 ## 📄 License
 
 This MCP server is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License. For more details, please see the LICENSE file in the project repository.
-
-

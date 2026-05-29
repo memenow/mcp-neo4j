@@ -56,7 +56,7 @@ To run a server in HTTP mode, use the `--transport http` flag:
 mcp-neo4j-cypher --transport http
 
 # Custom HTTP configuration
-mcp-neo4j-cypher --transport http --host 0.0.0.0 --port 8080 --path /api/mcp/
+mcp-neo4j-cypher --transport http --server-host 0.0.0.0 --server-port 8080 --server-path /api/mcp/
 ```
 
 Environment variables are also supported:
